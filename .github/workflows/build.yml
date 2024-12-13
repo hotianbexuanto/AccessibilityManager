@@ -43,7 +43,7 @@ jobs:
 
     # 上传构建产物（例如 APK 文件）
     - name: Upload APK artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: app-apk
         path: app/build/outputs/apk/debug/app-debug.apk
