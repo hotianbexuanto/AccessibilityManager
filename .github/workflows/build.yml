@@ -25,7 +25,7 @@ jobs:
       run: chmod +x gradlew
 
     - name: Build with Gradle
-      run: ./gradlew build  # Ensure we build the release variant
+      run: ./gradlew build
 
     - name: Check APK file existence
       run: |
