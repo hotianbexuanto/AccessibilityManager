@@ -1,4 +1,4 @@
-name: Build and Release APK
+name: Gradle Build and Test
 
 on:
   push:
@@ -17,12 +17,12 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    # 设置 JDK（Java Development Kit）
+    # 设置 JDK 11 (使用 Adoptium)
     - name: Set up JDK 11
       uses: actions/setup-java@v2
       with:
         java-version: '11'
-        distribution: 'adoptopenjdk'
+        distribution: 'adoptium'
 
     # 缓存 Gradle 构建依赖（加速构建）
     - name: Cache Gradle dependencies
@@ -35,16 +35,15 @@ jobs:
 
     # 安装依赖并进行构建
     - name: Gradle build
-      run: ./gradlew build --no-daemon
+      run: ./gradlew build --no-daemon  # --no-daemon 防止长时间运行的 Gradle 守护进程
 
     # 运行测试（可选）
     - name: Gradle test
       run: ./gradlew test --no-daemon
 
-    # 上传 APK 到 GitHub Releases
-    - name: Create Release and Upload APK
-      uses: softprops/action-gh-release@v1
+    # 上传构建产物（例如 APK 文件）
+    - name: Upload APK artifact
+      uses: actions/upload-artifact@v2
       with:
-        files: app/build/outputs/apk/debug/app-debug.apk
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        name: app-apk
+        path: app/build/outputs/apk/debug/app-debug.apk
