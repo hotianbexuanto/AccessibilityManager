@@ -1,4 +1,4 @@
-name: Android CI Releases
+name: Android CI
 
 on:
   push:
@@ -38,20 +38,19 @@ jobs:
         echo "Compressing android/app/build directory into $ZIP_FILE"
         zip -r $ZIP_FILE ./app/build  # Compress the build directory
         ls -lh $ZIP_FILE  # List the compressed file
+        echo "ZIP_FILE=$ZIP_FILE" >> $GITHUB_ENV  # Set ZIP_FILE as an environment variable for later use
 
-    - name: Create Release
+    - name: Create GitHub Release
       id: create_release
       run: |
         TAG_NAME="v$(date +'%Y%m%d%H%M%S')"  # Create a unique version tag
         echo "Creating release with tag: $TAG_NAME"
-        gh release create $TAG_NAME $ZIP_FILE --title "Release $TAG_NAME" --notes "Automated release with build files"
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Ensure GH_TOKEN is set
+        echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV  # Set TAG_NAME as an environment variable for later use
 
-    - name: Upload Zip to Release
-      run: |
-        TAG_NAME="v$(date +'%Y%m%d%H%M%S')"
-        echo "Uploading $ZIP_FILE to release"
-        gh release upload $TAG_NAME $ZIP_FILE --clobber
+    - name: Upload Release to GitHub Releases
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ env.TAG_NAME }}  # Use the tag created earlier
+        files: ${{ env.ZIP_FILE }}  # Upload the compressed .zip file
       env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Ensure GH_TOKEN is set
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Ensure GH_TOKEN is set
