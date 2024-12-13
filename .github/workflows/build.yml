@@ -42,7 +42,7 @@ jobs:
       run: ./gradlew test --no-daemon
 
     # 上传构建产物（例如 APK 文件）
-    - name: Upload APK
+    - name: Upload APK artifact
       uses: actions/upload-artifact@v2
       with:
         name: app-apk
