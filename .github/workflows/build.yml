@@ -1,4 +1,4 @@
-name: Android CI
+name: Android CI Releases
 
 on:
   push:
@@ -25,20 +25,33 @@ jobs:
       run: chmod +x gradlew
 
     - name: Build with Gradle
-      run: ./gradlew build
+      run: ./gradlew assembleRelease  # Ensure we build the release variant
+
+    - name: Check APK file existence
+      run: |
+        echo "Listing APK files in the build folder:"
+        ls ./app/build/outputs/apk/release  # List release APK files to debug
+
+    - name: Compress build folder
+      run: |
+        ZIP_FILE="android-build-$(date +'%Y%m%d%H%M%S').zip"
+        echo "Compressing android/app/build directory into $ZIP_FILE"
+        zip -r $ZIP_FILE ./app/build  # Compress the build directory
+        ls -lh $ZIP_FILE  # List the compressed file
 
     - name: Create Release
       id: create_release
       run: |
         TAG_NAME="v$(date +'%Y%m%d%H%M%S')"  # Create a unique version tag
         echo "Creating release with tag: $TAG_NAME"
-        gh release create $TAG_NAME ./app/build/outputs/apk/release/app-release.apk --title "Release $TAG_NAME" --notes "Automated release"
+        gh release create $TAG_NAME $ZIP_FILE --title "Release $TAG_NAME" --notes "Automated release with build files"
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Ensure GH_TOKEN is set
 
-    - name: Upload APK to Release
+    - name: Upload Zip to Release
       run: |
         TAG_NAME="v$(date +'%Y%m%d%H%M%S')"
-        gh release upload $TAG_NAME ./app/build/outputs/apk/release/app-release.apk --clobber
+        echo "Uploading $ZIP_FILE to release"
+        gh release upload $TAG_NAME $ZIP_FILE --clobber
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Ensure GH_TOKEN is set
