@@ -25,12 +25,12 @@ jobs:
       run: chmod +x gradlew
 
     - name: Build with Gradle
-      run: ./gradlew assembleRelease  # Ensure we build the release variant
+      run: ./gradlew build  # Ensure we build the release variant
 
     - name: Check APK file existence
       run: |
         echo "Listing APK files in the build folder:"
-        ls ./app/build/outputs/apk/release  # List release APK files to debug
+        ls ./app/build/outputs/apk/  # List release APK files to debug
 
     - name: Compress build folder
       run: |
