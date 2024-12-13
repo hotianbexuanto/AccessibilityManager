@@ -33,8 +33,12 @@ jobs:
         TAG_NAME="v$(date +'%Y%m%d%H%M%S')"  # Create a unique version tag
         echo "Creating release with tag: $TAG_NAME"
         gh release create $TAG_NAME ./app/build/outputs/apk/release/app-release.apk --title "Release $TAG_NAME" --notes "Automated release"
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Ensure GH_TOKEN is set
 
     - name: Upload APK to Release
       run: |
         TAG_NAME="v$(date +'%Y%m%d%H%M%S')"
         gh release upload $TAG_NAME ./app/build/outputs/apk/release/app-release.apk --clobber
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Ensure GH_TOKEN is set
