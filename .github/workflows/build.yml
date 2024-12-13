@@ -1,4 +1,4 @@
-name: Gradle Build and Test
+name: Build and Release APK
 
 on:
   push:
@@ -35,15 +35,16 @@ jobs:
 
     # 安装依赖并进行构建
     - name: Gradle build
-      run: ./gradlew build --no-daemon  # --no-daemon 防止长时间运行的 Gradle 守护进程
+      run: ./gradlew build --no-daemon
 
     # 运行测试（可选）
     - name: Gradle test
       run: ./gradlew test --no-daemon
 
-    # 上传构建产物（例如 APK 文件）
-    - name: Upload APK artifact
-      uses: actions/upload-artifact@v3
+    # 上传 APK 到 GitHub Releases
+    - name: Create Release and Upload APK
+      uses: softprops/action-gh-release@v1
       with:
-        name: app-apk
-        path: app/build/outputs/apk/debug/app-debug.apk
+        files: app/build/outputs/apk/debug/app-debug.apk
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
